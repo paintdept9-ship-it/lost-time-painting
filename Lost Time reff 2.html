@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Lost Time Maintenance</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #1e1e2f;
+      color: #e4e4e4;
+    }
+    h2 {
+      text-align: center;
+      color: #00c3ff;
+    }
+    .form-container {
+      background: #2a2a40;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+      max-width: 900px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+      color: #bbb;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #333;
+      color: #eee;
+    }
+    button {
+      background: #00c3ff;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 5px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #008bb3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #2a2a40;
+      color: #eee;
+    }
+    table, th, td {
+      border: 1px solid #555;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background: #00c3ff;
+      color: white;
+    }
+    .dashboard {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #2a2a40;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.7);
+    }
+    #loginScreen {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background: #2a2a40;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    }
+    select.filter {
+      width: auto;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="loginScreen">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label for="loginId">ID</label>
+      <input type="text" id="loginId">
+    </div>
+    <div class="form-group">
+      <label for="loginPass">Password</label>
+      <input type="password" id="loginPass">
+    </div>
+    <button onclick="checkLogin()">Login</button>
+    <p id="loginError" style="color:red; display:none;">ID atau Password salah!</p>
+  </div>
+
+  <!-- App -->
+  <div id="app" style="display:none;">
+    <h2>Data Lost Time Maintenance</h2>
+    <div class="form-container">
+      <form id="maintenanceForm">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label>Machine</label>
+          <select id="machine" required>
+            <option value="">-- Pilih Machine --</option>
+            <option>Conveyor</option>
+            <option>Pretreatment</option>
+            <option>Oven</option>
+            <option>Primer</option>
+            <option>Base Coat</option>
+            <option>PPH 308</option>
+            <option>Clear Coat</option>
+            <option>Sludge Removal</option>
+            <option>Air Supply Unit</option>
+            <option>COMM</option>
+            <option>Boiler</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="category" required>
+            <option value="">-- Pilih Category --</option>
+            <option>Mechanic</option>
+            <option>Electrical</option>
+            <option>System / Program</option>
+            <option>Pneumatic</option>
+            <option>Fabrication</option>
+            <option>Spray Equipment</option>
+            <option>Heating Process</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Trouble Detail</label>
+          <textarea id="trouble" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Analysis</label>
+          <textarea id="analysis" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Repair Improvement</label>
+          <textarea id="repair" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Lost Time (Minute)</label>
+          <input type="number" id="lostTime" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>PIC</label>
+          <select id="pic" required>
+            <option value="">-- Pilih PIC --</option>
+            <option>Dandik</option>
+            <option>Davit</option>
+            <option>Triyono</option>
+            <option>Muchrobin</option>
+            <option>Ali</option>
+            <option>Slamet</option>
+            <option>Joni</option>
+            <option>Dede</option>
+            <option>A Apandi</option>
+          </select>
+        </div>
+        <button type="submit">Tambah Data</button>
+      </form>
+    </div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="downloadExcel()">Download Excel</button>
+      <label style="color:#fff;">Print Berdasarkan:</label>
+      <select id="printFilter" class="filter">
+        <option value="all">Semua Data</option>
+        <option value="month">Bulan</option>
+        <option value="week">Minggu</option>
+      </select>
+      <button onclick="printData()">Print</button>
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Machine</th>
+          <th>Category</th>
+          <th>Trouble Detail</th>
+          <th>Analysis</th>
+          <th>Repair Improvement</th>
+          <th>Lost Time (Min)</th>
+          <th>PIC</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="dashboard">
+      <div class="card"><h3>Lost Time per Machine</h3><canvas id="machineChart"></canvas></div>
+      <div class="card"><h3>Lost Time per Category</h3><canvas id="categoryChart"></canvas></div>
+      <div class="card"><h3>Lost Time per PIC</h3><canvas id="picChart"></canvas></div>
+      <div class="card"><h3>Lost Time per Bulan</h3><canvas id="monthChart"></canvas></div>
+      <div class="card"><h3>Lost Time per Minggu</h3><canvas id="weekChart"></canvas></div>
+    </div>
+  </div>
+
+  <script>
+    // LOGIN
+    function checkLogin() {
+      const id = document.getElementById("loginId").value;
+      const pass = document.getElementById("loginPass").value;
+      if (id === "Painting" && pass === "123456") {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("app").style.display = "block";
+      } else {
+        document.getElementById("loginError").style.display = "block";
+      }
+    }
+
+    // DATA
+    const form = document.getElementById("maintenanceForm");
+    const tableBody = document.querySelector("#dataTable tbody");
+    let dataRecords = [];
+
+    let machineChart, categoryChart, picChart, monthChart, weekChart;
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const record = {
+        date: document.getElementById("date").value,
+        machine: document.getElementById("machine").value,
+        category: document.getElementById("category").value,
+        trouble: document.getElementById("trouble").value,
+        analysis: document.getElementById("analysis").value,
+        repair: document.getElementById("repair").value,
+        lostTime: parseInt(document.getElementById("lostTime").value),
+        pic: document.getElementById("pic").value
+      };
+      dataRecords.push(record);
+      updateTable();
+      updateCharts();
+      form.reset();
+    });
+
+    function updateTable() {
+      tableBody.innerHTML = "";
+      dataRecords.forEach((r, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${r.date}</td>
+          <td>${r.machine}</td>
+          <td>${r.category}</td>
+          <td>${r.trouble}</td>
+          <td>${r.analysis}</td>
+          <td>${r.repair}</td>
+          <td>${r.lostTime}</td>
+          <td>${r.pic}</td>
+          <td><button onclick="deleteRecord(${index})">Hapus</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function deleteRecord(index) {
+      if (confirm("Yakin ingin menghapus data ini?")) {
+        dataRecords.splice(index, 1);
+        updateTable();
+        updateCharts();
+      }
+    }
+
+    function getWeekNumber(dateStr) {
+      const d = new Date(dateStr);
+      const oneJan = new Date(d.getFullYear(),0,1);
+      const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+      return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+    }
+
+    function updateCharts() {
+      const sumBy = (keyFn) => {
+        return dataRecords.reduce((acc, r) => {
+          const key = keyFn(r);
+          acc[key] = (acc[key] || 0) + r.lostTime;
+          return acc;
+        }, {});
+      };
+
+      const machineData = sumBy(r=>r.machine);
+      const categoryData = sumBy(r=>r.category);
+      const picData = sumBy(r=>r.pic);
+      const monthData = sumBy(r=> r.date ? r.date.slice(0,7) : "Unknown");
+      const weekData = sumBy(r=> r.date ? r.date.slice(0,4) + "-W" + getWeekNumber(r.date) : "Unknown");
+
+      machineChart = renderChart("machineChart", machineData, "Lost Time per Machine", machineChart);
+      categoryChart = renderChart("categoryChart", categoryData, "Lost Time per Category", categoryChart);
+      picChart = renderChart("picChart", picData, "Lost Time per PIC", picChart);
+      monthChart = renderChart("monthChart", monthData, "Lost Time per Bulan", monthChart);
+      weekChart = renderChart("weekChart", weekData, "Lost Time per Minggu", weekChart);
+    }
+
+    function renderChart(canvasId, data, label, oldChart) {
+      if (oldChart) oldChart.destroy();
+      const ctx = document.getElementById(canvasId).getContext("2d");
+      return new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            label: label,
+            data: Object.values(data),
+            backgroundColor: ctx.createLinearGradient(0,0,0,400),
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              ticks: { color: "#fff" },
+              grid: { color: "#444" }
+            },
+            x: {
+              ticks: { color: "#fff" },
+              grid: { color: "#444" }
+            }
+          }
+        }
+      });
+    }
+
+    function downloadExcel() {
+      const ws = XLSX.utils.json_to_sheet(dataRecords);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "LostTimeData");
+      XLSX.writeFile(wb, "LostTimeMaintenance.xlsx");
+    }
+
+    function printData() {
+      const filter = document.getElementById("printFilter").value;
+      let filtered = dataRecords;
+      if (filter === "month") {
+        const month = prompt("Masukkan bulan (format YYYY-MM):");
+        filtered = dataRecords.filter(r => r.date.startsWith(month));
+      } else if (filter === "week") {
+        const week = prompt("Masukkan minggu (format YYYY-Wxx):");
+        filtered = dataRecords.filter(r => r.date.slice(0,4) + "-W" + getWeekNumber(r.date) === week);
+      }
+      let printWindow = window.open("", "_blank");
+      let html = "<h2>Data Lost Time Maintenance</h2><table border='1' cellspacing='0' cellpadding='5'><tr><th>Date</th><th>Machine</th><th>Category</th><th>Trouble</th><th>Analysis</th><th>Repair</th><th>Lost Time</th><th>PIC</th></tr>";
+      filtered.forEach(r => {
+        html += `<tr><td>${r.date}</td><td>${r.machine}</td><td>${r.category}</td><td>${r.trouble}</td><td>${r.analysis}</td><td>${r.repair}</td><td>${r.lostTime}</td><td>${r.pic}</td></tr>`;
+      });
+      html += "</table>";
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  </script>
+</body>
+</html>
