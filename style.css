@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #1e1e2f;
+    color: #e4e4e4;
+}
+
+h2 {
+    text-align: center;
+    color: #00c3ff;
+}
+
+.form-container {
+    background: #2a2a40;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+    color: #bbb;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #333;
+    color: #eee;
+}
+
+button {
+    background: #00c3ff;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background: #008bb3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #2a2a40;
+    color: #eee;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+th {
+    background: #00c3ff;
+    color: white;
+}
+
+.dashboard {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #2a2a40;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+}
+
+#loginScreen {
+    max-width: 420px;
+    margin: 100px auto;
+    padding: 20px;
+    background: #2a2a40;
+    border-radius: 12px;
+    text-align: center;
+}
+
+#loginScreen img {
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+select.filter {
+    width: auto;
+    margin-left: 10px;
+}

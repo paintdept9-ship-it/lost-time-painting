@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Lost Time Maintenance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="padding:20px;">
+        <h2>Dashboard Lost Time Maintenance</h2>
+        <div style="text-align:center; margin-bottom:20px;">
+            <a href="index.html" style="background: #00c3ff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px;">Kembali ke Data</a>
+        </div>
+
+        <div class="dashboard">
+            <div class="card"><h3>Lost Time per Machine</h3><canvas id="machineChart"></canvas></div>
+            <div class="card"><h3>Lost Time per Category</h3><canvas id="categoryChart"></canvas></div>
+            <div class="card"><h3>Lost Time per PIC</h3><canvas id="picChart"></canvas></div>
+            <div class="card"><h3>Lost Time per Bulan</h3><canvas id="monthChart"></canvas></div>
+            <div class="card"><h3>Lost Time per Minggu</h3><canvas id="weekChart"></canvas></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://skjtzbldpvmacmotdomr.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNranR6YmxkcHZtYWNtb3Rkb21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0Nzk4ODYsImV4cCI6MjA3MzA1NTg4Nn0.u8Zg2k7us_wHnamqplRYZ7rI6ls68zRZ6iLgfitTviM";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let dataRecords = [];
+        let machineChart, categoryChart, picChart, monthChart, weekChart;
+
+        async function loadRecords() {
+            const { data, error } = await supabaseClient.from("lost_time_maintenance").select("*");
+            if (error) { console.error(error); return; }
+            dataRecords = data;
+            updateCharts();
+        }
+
+        function getWeekNumber(dateStr) {
+            const d = new Date(dateStr);
+            const oneJan = new Date(d.getFullYear(),0,1);
+            const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+            return Math.ceil((d.getDay() + 1 + numberOfDays) / 7);
+        }
+
+        function updateCharts() {
+            const sumBy = (keyFn) => dataRecords.reduce((acc, r) => { const k = keyFn(r); acc[k] = (acc[k] || 0) + r.lost_time; return acc; }, {});
+            machineChart = renderChart("machineChart", sumBy(r=>r.machine), machineChart);
+            categoryChart = renderChart("categoryChart", sumBy(r=>r.category), categoryChart);
+            picChart = renderChart("picChart", sumBy(r=>r.pic), picChart);
+            monthChart = renderChart("monthChart", sumBy(r=> r.date ? r.date.slice(0,7) : "Unknown"), monthChart);
+            weekChart = renderChart("weekChart", sumBy(r=> r.date ? r.date.slice(0,4) + "-W" + getWeekNumber(r.date) : "Unknown"), weekChart);
+        }
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function renderChart(canvasId, data, oldChart) {
+            if (oldChart) oldChart.destroy();
+            const ctx = document.getElementById(canvasId).getContext("2d");
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const backgroundColors = labels.map(() => getRandomColor());
+            
+            return new Chart(ctx, {
+                type: "bar",
+                data: { 
+                    labels: labels, 
+                    datasets: [{ 
+                        data: values, 
+                        backgroundColor: backgroundColors, 
+                        borderColor: backgroundColors, 
+                        borderWidth: 2 
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    plugins: { 
+                        legend: { display: false } 
+                    }, 
+                    scales: { 
+                        y: { ticks: { color: "#fff" } }, 
+                        x: { ticks: { color: "#fff" } } 
+                    } 
+                }
+            });
+        }
+        window.onload = loadRecords;
+    </script>
+</body>
+</html>
