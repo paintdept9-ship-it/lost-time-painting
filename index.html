@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboardd Lost Time Maintenance</title>
+  <title>Dashboard Lost Time Maintenance</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 0;
       background: #1e1e2f;
       color: #e4e4e4;
     }
@@ -25,9 +25,7 @@
       max-width: 900px;
       margin: auto;
     }
-    .form-group {
-      margin-bottom: 12px;
-    }
+    .form-group { margin-bottom: 12px; }
     label {
       font-weight: bold;
       display: block;
@@ -52,9 +50,7 @@
       margin: 5px;
       transition: 0.3s;
     }
-    button:hover {
-      background: #008bb3;
-    }
+    button:hover { background: #008bb3; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -62,17 +58,9 @@
       background: #2a2a40;
       color: #eee;
     }
-    table, th, td {
-      border: 1px solid #555;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background: #00c3ff;
-      color: white;
-    }
+    table, th, td { border: 1px solid #555; }
+    th, td { padding: 10px; text-align: left; }
+    th { background: #00c3ff; color: white; }
     .dashboard {
       margin-top: 30px;
       display: grid;
@@ -85,24 +73,28 @@
       padding: 20px;
       box-shadow: 0 6px 12px rgba(0,0,0,0.7);
     }
+    /* LOGIN */
     #loginScreen {
-      max-width: 400px;
+      max-width: 420px;
       margin: 100px auto;
       padding: 20px;
       background: #2a2a40;
       border-radius: 12px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+      text-align: center;
     }
-    select.filter {
-      width: auto;
-      margin-left: 10px;
+    #loginScreen img {
+      width: 120px;
+      margin-bottom: 20px;
     }
+    select.filter { width: auto; margin-left: 10px; }
   </style>
 </head>
 <body>
   <!-- Login -->
   <div id="loginScreen">
-    <h2>Login</h2>
+    <img src="https://cdn-icons-png.flaticon.com/512/3344/3344378.png" alt="Engineering Icon">
+    <h2>Login Maintenance</h2>
     <div class="form-group">
       <label for="loginId">ID</label>
       <input type="text" id="loginId">
@@ -116,7 +108,7 @@
   </div>
 
   <!-- App -->
-  <div id="app" style="display:none;">
+  <div id="app" style="display:none; padding:20px;">
     <h2>Data Lost Time Maintenance</h2>
     <div class="form-container">
       <form id="maintenanceForm">
@@ -128,30 +120,19 @@
           <label>Machine</label>
           <select id="machine" required>
             <option value="">-- Pilih Machine --</option>
-            <option>Conveyor</option>
-            <option>Pretreatment</option>
-            <option>Oven</option>
-            <option>Primer</option>
-            <option>Base Coat</option>
-            <option>PPH 308</option>
-            <option>Clear Coat</option>
-            <option>Sludge Removal</option>
-            <option>Air Supply Unit</option>
-            <option>COMM</option>
-            <option>Boiler</option>
+            <option>Conveyor</option><option>Pretreatment</option><option>Oven</option>
+            <option>Primer</option><option>Base Coat</option><option>PPH 308</option>
+            <option>Clear Coat</option><option>Sludge Removal</option>
+            <option>Air Supply Unit</option><option>COMM</option><option>Boiler</option>
           </select>
         </div>
         <div class="form-group">
           <label>Category</label>
           <select id="category" required>
             <option value="">-- Pilih Category --</option>
-            <option>Mechanic</option>
-            <option>Electrical</option>
-            <option>System / Program</option>
-            <option>Pneumatic</option>
-            <option>Fabrication</option>
-            <option>Spray Equipment</option>
-            <option>Heating Process</option>
+            <option>Mechanic</option><option>Electrical</option><option>System / Program</option>
+            <option>Pneumatic</option><option>Fabrication</option>
+            <option>Spray Equipment</option><option>Heating Process</option>
           </select>
         </div>
         <div class="form-group">
@@ -174,15 +155,9 @@
           <label>PIC</label>
           <select id="pic" required>
             <option value="">-- Pilih PIC --</option>
-            <option>Dandik</option>
-            <option>Davit</option>
-            <option>Triyono</option>
-            <option>Muchrobin</option>
-            <option>Ali</option>
-            <option>Slamet</option>
-            <option>Joni</option>
-            <option>Dede</option>
-            <option>A Apandi</option>
+            <option>Dandik</option><option>Davit</option><option>Triyono</option>
+            <option>Muchrobin</option><option>Ali</option><option>Slamet</option>
+            <option>Joni</option><option>Dede</option><option>A Apandi</option>
           </select>
         </div>
         <button type="submit">Tambah Data</button>
@@ -203,15 +178,8 @@
     <table id="dataTable">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Machine</th>
-          <th>Category</th>
-          <th>Trouble Detail</th>
-          <th>Analysis</th>
-          <th>Repair Improvement</th>
-          <th>Lost Time (Min)</th>
-          <th>PIC</th>
-          <th>Aksi</th>
+          <th>Date</th><th>Machine</th><th>Category</th><th>Trouble Detail</th>
+          <th>Analysis</th><th>Repair Improvement</th><th>Lost Time (Min)</th><th>PIC</th><th>Aksi</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -313,14 +281,14 @@
       const monthData = sumBy(r=> r.date ? r.date.slice(0,7) : "Unknown");
       const weekData = sumBy(r=> r.date ? r.date.slice(0,4) + "-W" + getWeekNumber(r.date) : "Unknown");
 
-      machineChart = renderChart("machineChart", machineData, "Lost Time per Machine", machineChart);
-      categoryChart = renderChart("categoryChart", categoryData, "Lost Time per Category", categoryChart);
-      picChart = renderChart("picChart", picData, "Lost Time per PIC", picChart);
-      monthChart = renderChart("monthChart", monthData, "Lost Time per Bulan", monthChart);
-      weekChart = renderChart("weekChart", weekData, "Lost Time per Minggu", weekChart);
+      machineChart = renderChart("machineChart", machineData, machineChart);
+      categoryChart = renderChart("categoryChart", categoryData, categoryChart);
+      picChart = renderChart("picChart", picData, picChart);
+      monthChart = renderChart("monthChart", monthData, monthChart);
+      weekChart = renderChart("weekChart", weekData, weekChart);
     }
 
-    function renderChart(canvasId, data, label, oldChart) {
+    function renderChart(canvasId, data, oldChart) {
       if (oldChart) oldChart.destroy();
       const ctx = document.getElementById(canvasId).getContext("2d");
       return new Chart(ctx, {
@@ -328,26 +296,18 @@
         data: {
           labels: Object.keys(data),
           datasets: [{
-            label: label,
             data: Object.values(data),
-            backgroundColor: ctx.createLinearGradient(0,0,0,400),
+            backgroundColor: "#00c3ff",
+            borderColor: "#00ffff",
             borderWidth: 2
           }]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            y: {
-              ticks: { color: "#fff" },
-              grid: { color: "#444" }
-            },
-            x: {
-              ticks: { color: "#fff" },
-              grid: { color: "#444" }
-            }
+            y: { ticks: { color: "#fff" }, grid: { color: "#444" } },
+            x: { ticks: { color: "#fff" }, grid: { color: "#444" } }
           }
         }
       });
